@@ -1,0 +1,21 @@
+name:                miso-styled
+version:             0.1
+
+extra-source-files:
+- README.md
+
+description:         Please see the README on GitHub at <https://github.com/githubuser/miso-styled#readme>
+
+dependencies:
+- base
+- clay
+- unordered-containers
+- miso
+- text
+- random
+
+default-extensions:
+- OverloadedStrings
+
+library:
+  source-dirs: src
