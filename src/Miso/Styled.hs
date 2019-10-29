@@ -2,7 +2,10 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TupleSections     #-}
 
-module Miso.Styled where
+module Miso.Styled
+    ( module Miso.Styled
+    , module Clay
+    ) where
 
 import           Clay                (Css, element, render, (?))
 import           Data.Coerce         (coerce)
