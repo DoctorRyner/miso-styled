@@ -7,7 +7,7 @@ module Miso.Styled
     , module Clay
     ) where
 
-import           Clay                (Css, element, render, (?))
+import           Clay                hiding (map)
 import           Data.Coerce         (coerce)
 import qualified Data.HashMap.Strict as HMap
 import           Data.List           (nub)
@@ -33,12 +33,15 @@ data VTree a
 node :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
 node tag attrs = VNode tag mempty (coerce attrs)
 
+el :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
+el = node
+
 generateHtml :: HMap.HashMap TL.Text Int -> MisoString -> View a -> Miso.View a
 generateHtml _ _            (VText str)                  = Miso.text str
 generateHtml cssHash uniqId (VNode tag css attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs ++ case HMap.lookup (render css) cssHash of
-        Just className -> [ Miso.class_ $ "_" <> uniqId <> ms className ]
+        Just className -> [ Miso.class_ $ "_" <> uniqId <> Miso.String.ms className ]
         Nothing        -> []
     )
     $ map (generateHtml cssHash uniqId) childs
@@ -52,8 +55,8 @@ rnd _ = unsafePerformIO $ randomRIO (0, 9999999)
 
 toUnstyled :: View a -> Miso.View a
 toUnstyled tree = Miso.div_ []
-    [ Miso.nodeHtml "style" [] [ Miso.text $ ms $ mconcat $ map render renderCss ]
-    , generateHtml cssHash (ms uniqId) tree
+    [ Miso.nodeHtml "style" [] [ Miso.text $ Miso.String.ms $ mconcat $ map render renderCss ]
+    , generateHtml cssHash (Miso.String.ms uniqId) tree
     ]
   where
     uniqId    = T.pack $ show $ rnd ()
@@ -63,8 +66,8 @@ toUnstyled tree = Miso.div_ []
     css       = nub $ collectCss tree
 
 toUnstyled' :: View a -> [Miso.View a]
-toUnstyled' tree = [ Miso.nodeHtml "style" [] [ Miso.text $ ms $ mconcat $ map render renderCss ]
-                   , generateHtml cssHash (ms uniqId) tree
+toUnstyled' tree = [ Miso.nodeHtml "style" [] [ Miso.text $ Miso.String.ms $ mconcat $ map render renderCss ]
+                   , generateHtml cssHash (Miso.String.ms uniqId) tree
                    ]
   where
     uniqId    = T.pack $ show $ rnd ()
