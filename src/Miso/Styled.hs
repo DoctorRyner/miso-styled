@@ -29,11 +29,8 @@ data VTree a
     = VNode MisoString (Maybe Css) [Attribute a] [VTree a]
     | VText MisoString
 
-node :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
-node tag attrs = VNode tag mempty (coerce attrs)
-
 el :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
-el = node
+el tag attrs = VNode tag Nothing (coerce attrs)
 
 generateHtml :: HMap.HashMap TL.Text Int -> MisoString -> View a -> Miso.View a
 generateHtml _ _            (VText str)                         = Miso.text str
