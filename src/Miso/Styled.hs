@@ -35,14 +35,19 @@ el tag attrs = VNode tag Nothing Nothing (coerce attrs)
 
 generateHtml :: HMap.HashMap TL.Text Int -> MisoString -> View a -> Miso.View a
 generateHtml _ _ (VText str) = Miso.text str
-generateHtml cssHash uniqId (VNode tag (Just classes) (Just css) attrs childs) = Miso.nodeHtml
+generateHtml cssHash uniqId (VNode tag mbClasses (Just css) attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs ++ case HMap.lookup (render css) cssHash of
-        Just className -> [ Miso.class_ $ ("_" <> uniqId <> Miso.String.ms className) <> " " <> Miso.String.ms classes ]
+        Just className ->
+            [ Miso.class_ $ mconcat
+                [ "_" <> uniqId <> Miso.String.ms className
+                , maybe "" ((" " <>) . Miso.String.ms) mbClasses
+                ]
+            ]
         Nothing        -> []
     )
     $ map (generateHtml cssHash uniqId) childs
-generateHtml cssHash uniqId (VNode tag _ _ attrs childs) = Miso.nodeHtml
+generateHtml cssHash uniqId (VNode tag _ Nothing attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs)
     $ map (generateHtml cssHash uniqId) childs
