@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans, -fno-full-laziness #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TupleSections     #-}
 
