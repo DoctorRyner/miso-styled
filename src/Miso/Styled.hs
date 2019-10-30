@@ -38,7 +38,7 @@ generateHtml _ _ (VText str) = Miso.text str
 generateHtml cssHash uniqId (VNode tag (Just classes) (Just css) attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs ++ case HMap.lookup (render css) cssHash of
-        Just className -> [ Miso.class_ $ ("_" <> uniqId <> Miso.String.ms className) <> " " <> classes ]
+        Just className -> [ Miso.class_ $ ("_" <> uniqId <> Miso.String.ms className) <> " " <> Miso.String.ms classes ]
         Nothing        -> []
     )
     $ map (generateHtml cssHash uniqId) childs
