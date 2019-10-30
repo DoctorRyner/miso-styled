@@ -42,7 +42,7 @@ generateHtml cssHash uniqId (VNode tag (Just classes) (Just css) attrs childs) =
         Nothing        -> []
     )
     $ map (generateHtml cssHash uniqId) childs
-generateHtml cssHash uniqId (VNode tag _ Nothing attrs childs) = Miso.nodeHtml
+generateHtml cssHash uniqId (VNode tag _ _ attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs)
     $ map (generateHtml cssHash uniqId) childs
