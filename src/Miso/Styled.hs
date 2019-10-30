@@ -14,6 +14,7 @@ import qualified Data.Text           as T
 import qualified Data.Text.Lazy      as TL
 import qualified Miso
 import           Miso.String         (MisoString, ms)
+import qualified Miso.String         as MS
 import           System.IO.Unsafe    (unsafePerformIO)
 import           System.Random
 
@@ -26,34 +27,34 @@ type View a = VTree a
 newtype Attribute a = Attribute (Miso.Attribute a)
 
 data VTree a
-    = VNode MisoString (Maybe Css) [Attribute a] [VTree a]
+    = VNode MisoString (Maybe T.Text) (Maybe Css) [Attribute a] [VTree a]
     | VText MisoString
 
 el :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
-el tag attrs = VNode tag Nothing (coerce attrs)
+el tag attrs = VNode tag Nothing Nothing (coerce attrs)
 
 generateHtml :: HMap.HashMap TL.Text Int -> MisoString -> View a -> Miso.View a
-generateHtml _ _            (VText str)                         = Miso.text str
-generateHtml cssHash uniqId (VNode tag (Just css) attrs childs) = Miso.nodeHtml
+generateHtml _ _ (VText str) = Miso.text str
+generateHtml cssHash uniqId (VNode tag (Just classes) (Just css) attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs ++ case HMap.lookup (render css) cssHash of
-        Just className -> [ Miso.class_ $ "_" <> uniqId <> Miso.String.ms className ]
+        Just className -> [ Miso.class_ $ ("_" <> uniqId <> Miso.String.ms className) <> " " <> classes ]
         Nothing        -> []
     )
     $ map (generateHtml cssHash uniqId) childs
-generateHtml cssHash uniqId (VNode tag Nothing attrs childs)    = Miso.nodeHtml
+generateHtml cssHash uniqId (VNode tag _ Nothing attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs)
     $ map (generateHtml cssHash uniqId) childs
 
 collectCss :: View a -> [Css]
 collectCss (VText _                    ) = mempty
-collectCss (VNode _ (Just css) _ childs) = css : mconcat (map collectCss childs)
-collectCss (VNode _ Nothing    _ childs) = mconcat (map collectCss childs)
+collectCss (VNode _ _ (Just css) _ childs) = css : mconcat (map collectCss childs)
+collectCss (VNode _ _ Nothing    _ childs) = mconcat (map collectCss childs)
 
 {-# NOINLINE rnd #-}
 rnd :: () -> Int
-rnd _ = unsafePerformIO $ randomRIO (0, 9999999)
+rnd _ = unsafePerformIO $ randomRIO (0, 2000000000)
 
 toUnstyled :: View a -> Miso.View a
 toUnstyled tree = Miso.div_ []
@@ -82,4 +83,8 @@ text :: MisoString -> VTree a
 text = VText
 
 styled :: MisoString -> Css -> [Miso.Attribute a] -> [View a] -> View a
-styled tag css attrs = VNode tag (Just css) (coerce attrs)
+styled tag css attrs = VNode tag Nothing (Just css) (coerce attrs)
+
+styled' :: MisoString -> Css -> MisoString -> [Miso.Attribute a] -> [View a] -> View a
+styled' tag css classes attrs = VNode tag (Just $ T.pack $ MS.unpack classes) (Just css) (coerce attrs)
+
