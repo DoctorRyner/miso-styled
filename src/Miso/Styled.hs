@@ -50,6 +50,7 @@ collectCss :: View a -> [Css]
 collectCss (VText _             ) = mempty
 collectCss (VNode _ css _ childs) = css : mconcat (map collectCss childs)
 
+{-# NOINLINE rnd #-}
 rnd :: () -> Int
 rnd _ = unsafePerformIO $ randomRIO (0, 9999999)
 
