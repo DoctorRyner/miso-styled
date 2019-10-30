@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-orphans, -fno-full-laziness #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TupleSections     #-}
 
@@ -27,7 +26,7 @@ type View a = VTree a
 newtype Attribute a = Attribute (Miso.Attribute a)
 
 data VTree a
-    = VNode MisoString Css [Attribute a] [VTree a]
+    = VNode MisoString (Maybe Css) [Attribute a] [VTree a]
     | VText MisoString
 
 node :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
@@ -37,18 +36,23 @@ el :: MisoString -> [Miso.Attribute a] -> [View a] -> View a
 el = node
 
 generateHtml :: HMap.HashMap TL.Text Int -> MisoString -> View a -> Miso.View a
-generateHtml _ _            (VText str)                  = Miso.text str
-generateHtml cssHash uniqId (VNode tag css attrs childs) = Miso.nodeHtml
+generateHtml _ _            (VText str)                         = Miso.text str
+generateHtml cssHash uniqId (VNode tag (Just css) attrs childs) = Miso.nodeHtml
     tag
     (coerce attrs ++ case HMap.lookup (render css) cssHash of
         Just className -> [ Miso.class_ $ "_" <> uniqId <> Miso.String.ms className ]
         Nothing        -> []
     )
     $ map (generateHtml cssHash uniqId) childs
+generateHtml cssHash uniqId (VNode tag Nothing attrs childs)    = Miso.nodeHtml
+    tag
+    (coerce attrs)
+    $ map (generateHtml cssHash uniqId) childs
 
 collectCss :: View a -> [Css]
-collectCss (VText _             ) = mempty
-collectCss (VNode _ css _ childs) = css : mconcat (map collectCss childs)
+collectCss (VText _                    ) = mempty
+collectCss (VNode _ (Just css) _ childs) = css : mconcat (map collectCss childs)
+collectCss (VNode _ Nothing    _ childs) = mconcat (map collectCss childs)
 
 {-# NOINLINE rnd #-}
 rnd :: () -> Int
@@ -81,4 +85,4 @@ text :: MisoString -> VTree a
 text = VText
 
 styled :: MisoString -> Css -> [Miso.Attribute a] -> [View a] -> View a
-styled tag css attrs = VNode tag css (coerce attrs)
+styled tag css attrs = VNode tag (Just css) (coerce attrs)

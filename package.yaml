@@ -14,6 +14,12 @@ dependencies:
 - text
 - random
 
+ghc-options:
+- -Wall
+- -Wno-orphans
+- -fno-full-laziness
+- -Wno-name-shadowing
+
 default-extensions:
 - OverloadedStrings
 
