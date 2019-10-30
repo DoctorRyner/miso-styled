@@ -93,3 +93,5 @@ styled tag css attrs = VNode tag Nothing (Just css) (coerce attrs)
 styled' :: MisoString -> Css -> MisoString -> [Miso.Attribute a] -> [View a] -> View a
 styled' tag css classes attrs = VNode tag (Just $ T.pack $ MS.unpack classes) (Just css) (coerce attrs)
 
+linkCss :: MisoString -> View a
+linkCss path = el "link" [ Miso.rel_ "stylesheet", Miso.href_ path ] []
