@@ -1,0 +1,32 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: a6ba1be9d2fd386618369c88ed81d9e0bb3172d54679def2cd9fdb3e97c6cd95
+
+name:           miso-styled
+version:        0.1
+description:    Please see the README on GitHub at <https://github.com/githubuser/miso-styled#readme>
+build-type:     Simple
+extra-source-files:
+    README.md
+
+library
+  exposed-modules:
+      Miso.Styled
+  other-modules:
+      Paths_miso_styled
+  hs-source-dirs:
+      src
+  default-extensions: OverloadedStrings
+  ghc-options: -Wall -Wno-orphans -fno-full-laziness -Wno-name-shadowing
+  build-depends:
+      base
+    , clay
+    , miso
+    , random
+    , text
+    , unordered-containers
+  default-language: Haskell2010
