@@ -160,8 +160,8 @@ blockquote_ = el "blockquote"
 body_ :: Tag event
 body_ = el "body"
 
-br_ :: Tag event
-br_ = el "br"
+br_ :: View a
+br_ = el "br" [] []
 
 button_ :: Tag event
 button_ = el "button"
