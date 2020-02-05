@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a6ba1be9d2fd386618369c88ed81d9e0bb3172d54679def2cd9fdb3e97c6cd95
+-- hash: 148e82b75f55c8c569aad36b5362bf749fedbff38e42fd2aad2516e89702e8b2
 
 name:           miso-styled
 version:        0.1
@@ -16,6 +16,8 @@ extra-source-files:
 library
   exposed-modules:
       Miso.Styled
+      Miso.Styled.DOM
+      Miso.Styled.Tags
   other-modules:
       Paths_miso_styled
   hs-source-dirs:
